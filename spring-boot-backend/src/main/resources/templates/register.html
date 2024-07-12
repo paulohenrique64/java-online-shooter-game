@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Spring Security Example </title>
+    <!--    <link rel="stylesheet" href="../static/css/register.css">-->
+    <link th:href="@{/css/register.css}" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Register page</h1>
+        </div>
+        <div class="form">
+            <div th:if="${param.message}">
+                Registered with sucess
+            </div>
+            <form>
+                <label> User Name : </label>
+                <input type="text" name="name"/>
+                <label> Password: </label>
+                <input type="password" name="password"/>
+                <label> Repeat password: </label>
+                <input type="password" name="password-repeat"/>
+                <input class="submit-button" type="submit" value="Sign In"/>
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/javascript/register.js"></script>
+</body>
+</html>
