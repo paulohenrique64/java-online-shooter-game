@@ -1,8 +1,9 @@
-package com.brothers.shooter_game.contollers;
+package com.brothers.shooter_game.controllers;
 
 import com.brothers.shooter_game.Models.*;
 import com.brothers.shooter_game.repository.UserRepository;
 import com.brothers.shooter_game.services.TokenService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -10,9 +11,12 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin("http://127.0.0.1:5500")
 @RestController
 @RequestMapping("auth")
 public class AuthController {
@@ -24,6 +28,8 @@ public class AuthController {
 
     @Autowired
     private TokenService tokenService;
+
+    SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
 
     @PostMapping("/login")
     public ResponseEntity loginUser(@RequestBody LoginDTO userdata, HttpServletResponse response) {
@@ -45,7 +51,7 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
-//                .maxAge(cookieExpiry)
+//                .maxAge(20000)
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());

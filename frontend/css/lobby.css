@@ -1,0 +1,51 @@
+body {
+    background-color: #c8bfff;
+}
+
+.container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header > h1 {
+    font-size: 10vh;
+}
+
+.informations {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.user-data > h3 {
+    margin-left: 40%;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+}
+
+.start-game-button, .logout-game-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3vh;
+    width: 30vh;
+    margin-bottom: 5vh;
+    height: 10vh;
+    background-color: rgb(144, 144, 255);
+    text-decoration: none;
+    color: black;
+    margin-left: 10%;
+}

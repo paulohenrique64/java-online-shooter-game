@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<head>
+    <title>Spring Security Example </title>
+    <!--    <link rel="stylesheet" href="../static/css/lobby.css">-->
+    <link href="./css/lobby.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Game Lobby</h1>
+        </div>
+        <div class="informations">
+            <div class="online-players">
+                <h3>Online Players List</h3>
+                <ul class="online-players-list"></ul>
+            </div>
+            <div class="user-data">
+                <h3>User data</h3>
+                <ul class="user-data-list"></ul>
+            </div>
+            <div class="buttons">
+                <a href="" class="start-game-button">Start Game</a>
+                <a href="#" class="logout-game-button">Logout Game</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script type="text/javascript" src="./javascript/lobby.js"></script>
+</body>
+</html>

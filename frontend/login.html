@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <head>
     <title>Login</title>
-    <!--    <link rel="stylesheet" href="../static/css/login.css">-->
-    <link th:href="@{/css/login.css}" type="text/css" rel="stylesheet"/>
+    <link href="./css/login.css" type="text/css" rel="stylesheet"/>
 </head>
 <body>
     <div class="container">
@@ -11,12 +9,6 @@
             <h1>Login page</h1>
         </div>
         <div class="form">
-            <div th:if="${param.error}">
-                Invalid username and password.
-            </div>
-            <div th:if="${param.logout}">
-                You have been logged out.
-            </div>
             <form>
                 <label> User Name : </label>
                 <input type="text" name="name"/>
@@ -25,8 +17,9 @@
                 <input class="submit-button" type="submit" value="Sign In"/>
             </form>
         </div>
+        <a href="/frontend/register.html">Register page</a>
     </div>
 
-    <script type="text/javascript" src="/javascript/login.js"></script>
+    <script type="text/javascript" src="./javascript/login.js"></script>
 </body>
 </html>

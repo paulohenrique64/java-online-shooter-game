@@ -15,16 +15,17 @@ function login(userdata) {
     console.log(JSON.stringify(userdata));
 
     const options = {
+        credentials: 'include',
         method: "POST",
         body: JSON.stringify(userdata),
         headers: myHeaders,
     };
 
-    fetch("/auth/login", options)
+    fetch("http://localhost:8080/auth/login", options)
         .then((response) => {
             console.log(response.status);
             if (response.status == 200)
-                window.location.replace("/lobby"); 
+                window.location.replace("/frontend/lobby.html"); 
         })
         .catch((error) => {
             console.log(error);

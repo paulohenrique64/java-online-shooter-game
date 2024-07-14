@@ -24,7 +24,7 @@ function register(userdata) {
         headers: myHeaders,
     };
 
-    fetch("/auth/register", options)
+    fetch("http://localhost:8080/auth/register", options)
         .then((response) => {
             console.log(response.status);
             if (response.status === 200)
