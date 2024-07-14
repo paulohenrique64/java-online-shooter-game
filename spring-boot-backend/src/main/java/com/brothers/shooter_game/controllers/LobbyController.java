@@ -3,6 +3,7 @@ package com.brothers.shooter_game.controllers;
 import com.brothers.shooter_game.Models.OnlinePlayersListDTO;
 import com.brothers.shooter_game.Models.Session;
 import com.brothers.shooter_game.Models.User;
+import com.brothers.shooter_game.repository.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -16,47 +17,59 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class LobbyController implements ApplicationListener  {
-    ArrayList<Session> sessions = new ArrayList<Session>();
-
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    SessionRepository sessionRepo;
 
     @MessageMapping("/online-players-list")
     @SendTo("/log/online-players-list")
     public OnlinePlayersListDTO updateOnlinePlayersList(Message message, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken, @Header("simpSessionId") String sessionId) throws Exception {
         User userdata = (User) usernamePasswordAuthenticationToken.getPrincipal();
-        System.out.println("user '" + userdata.getName() + "' with id '" + sessionId + "' CONNECTED in game lobby");
 
         boolean has = false;
+        List<Session> sessions = sessionRepo.findAll();
+
         for (int i = 0; i < sessions.size(); i++) {
-            if (sessions.get(i).getAttribute("username") == userdata.getName())
+            if (sessions.get(i).getUsername().equals(userdata.getName()))
                 has = true;
         }
 
-        if (!has)
-            sessions.add(new Session(sessionId, userdata.getName()));
+        if (!has) {
+            System.out.println("user '" + userdata.getName() + "' with id '" + sessionId + "' CONNECTED in game lobby");
+            sessionRepo.save(new Session(sessionId, userdata.getName()));
+        }
 
-        return new OnlinePlayersListDTO(this.sessions);
+        return new OnlinePlayersListDTO(sessionRepo.findAll());
     }
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         SessionDisconnectEvent sessionDisconnectEvent = (SessionDisconnectEvent) event;
-        String username = null;
+        Optional opt = sessionRepo.findById(sessionDisconnectEvent.getSessionId());
+        Session session = null;
 
-        for (int i = 0; i < sessions.size(); i++) {
-            if (this.sessions.get(i).getId().equals(sessionDisconnectEvent.getSessionId())) {
-                username = this.sessions.get(i).getUsername();
-                this.sessions.remove(i);
-                break;
-            }
+        if (opt.isPresent())
+            session = (Session) opt.get();
+
+        if (session != null) {
+            sessionRepo.deleteByUsername(session.getUsername());
+            System.out.println("user '" + session.getUsername() + "' with id '" + sessionDisconnectEvent.getSessionId() + "' DISCONNECTED of game lobby");
         }
 
-        System.out.println("user '" + username + "' with id '" + sessionDisconnectEvent.getSessionId() + "' DISCONNECTED of game lobby");
+        sendOnlinePlayersList();
+    }
+
+    public void sendOnlinePlayersList() {
+        simpMessagingTemplate.convertAndSend("/log/online-players-list", new OnlinePlayersListDTO(sessionRepo.findAll()));
     }
 }
+
 
 

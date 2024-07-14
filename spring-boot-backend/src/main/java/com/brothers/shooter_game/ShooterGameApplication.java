@@ -1,6 +1,7 @@
 package com.brothers.shooter_game;
 
 import com.brothers.shooter_game.Models.User;
+import com.brothers.shooter_game.repository.SessionRepository;
 import com.brothers.shooter_game.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -19,6 +20,9 @@ public class ShooterGameApplication implements CommandLineRunner {
 	@Autowired
 	UserRepository userRepo;
 
+	@Autowired
+	SessionRepository sessionRepo;
+
 	public static void main(String[] args) {
 		SpringApplication.run(ShooterGameApplication.class, args);
 	}
@@ -31,6 +35,7 @@ public class ShooterGameApplication implements CommandLineRunner {
 
 		System.out.println("aplication running on: http://localhost:8080" );
 
+		sessionRepo.deleteAll();
 //		userRepo.deleteAll();
 	}
 }

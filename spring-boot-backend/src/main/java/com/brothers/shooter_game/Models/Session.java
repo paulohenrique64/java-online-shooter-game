@@ -1,6 +1,9 @@
 package com.brothers.shooter_game.Models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -9,10 +12,17 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@Document("sessions")
 public class Session implements org.springframework.session.Session {
+    @Id
     private String id;
+
+    @Indexed(unique = true)
     private String username;
     private Instant creationTime;
+
+    public Session() {
+    }
 
     public Session(String id, String username) {
         this.id = id;
