@@ -1,17 +1,20 @@
 ## Java Shooter Game
 
-A multiplayer shooter game created with java and angular
+A multiplayer shooter game created with java spring backend and vanilla frontend
 
 ### Tech useds
 
 - Spring Data
 - Spring Security
 - Spring Web
-- Angular
+- Spring Messaging
 
 ### Running project
 
 ```
-./run.sh
+docker compose build
+```
+```
+docker compose up
 ```
 
