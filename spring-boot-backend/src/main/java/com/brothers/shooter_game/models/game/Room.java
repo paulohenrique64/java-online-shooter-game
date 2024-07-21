@@ -47,10 +47,30 @@ public class Room {
         return false;
     }
 
+    // THIS METHOD IS VOID FOR WHILE
+    // IN FUTURE, THIS METHOD WILL RETURN TRUE FOR SUCESS FIRE
+    public void playerFire(String username) {
+        // simular um tiro saindo de player e batendo no gameMap wall
+        this.playerList.stream().forEach(player -> {
+            if (player.getUsername().equals(username)) {
+                player.fire(this.playerList);
+            }
+        });
+    }
+
+    // THIS METHOD IS VOID FOR WHILE
+    // IN FUTURE, THIS METHOD WILL RETURN TRUE FOR SUCESS MOVE ANGLE
+    public void setPlayerWeaponAngle(double angle, String username) {
+        this.playerList.stream().forEach(player -> {
+            if (player.getUsername().equals(username)) {
+                player.getWeapon().setAngle(angle);
+            }
+        });
+    }
+
     public boolean movePlayer(String username, String key) {
         boolean moved = false;
         char realKey = key.charAt(1);
-        System.out.println(realKey);
 
         this.playerList.stream().forEach(player -> {
             if (player.getUsername().equals(username)) {

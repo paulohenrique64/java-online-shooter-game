@@ -13,6 +13,7 @@ public class Player {
     private double y;
     private int speedPlayer;
     private List<Point> positionWall;
+    private Weapon weapon;
 
     public Player(String playerSessionId, String username, List<Point> positionWall) {
         this.playerSessionId = playerSessionId;
@@ -22,6 +23,7 @@ public class Player {
         this.speedPlayer = 5;
         this.x = 200;
         this.y = 200;
+        this.weapon = new Weapon();
     }
 
     public int getLife() {
@@ -34,6 +36,12 @@ public class Player {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void fire(List<Player> playerList) {
+        Bullet bullet = new Bullet(this.x, this.y, this.weapon.getAngle(), 20);
+
+
     }
 
     public void respawn() {
@@ -124,5 +132,9 @@ public class Player {
 
     public String getPlayerSessionId() {
         return playerSessionId;
+    }
+
+    public Weapon getWeapon() {
+        return weapon;
     }
 }

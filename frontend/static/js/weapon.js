@@ -21,7 +21,7 @@ export class Weapon {
         document.querySelector(".gameDiv").addEventListener('mouseup', () => {
             this.isFiring = false;
         });
-        this.app.renderer.plugins.interaction.on('mousemove', this.onMouseMove.bind(this));
+        // this.app.renderer.plugins.interaction.on('mousemove', this.onMouseMove.bind(this));
     }
 
     fire() {
@@ -59,8 +59,6 @@ export class Weapon {
         this.sprite.rotation = angle;
     }
 
-    
-
     gameLoop() {
         if (this.isFiring && this.framesSinceLastFire >= this.fireRate) {
             this.fire();
@@ -91,26 +89,26 @@ export class Weapon {
         const bulletSize = 9;
         const tileSize = 110;
     
-        // for (let i = 0; i < this.wallsPositions.length; i++) {
-        //     const wall = this.wallsPositions[i];
+        for (let i = 0; i < this.wallsPositions.length; i++) {
+            const wall = this.wallsPositions[i];
     
-        //     const bulletLeft = bullet.x - bulletSize / 2;
-        //     const bulletRight = bullet.x + bulletSize / 2;
-        //     const bulletTop = bullet.y - bulletSize / 2;
-        //     const bulletBottom = bullet.y + bulletSize / 2;
+            const bulletLeft = bullet.x - bulletSize / 2;
+            const bulletRight = bullet.x + bulletSize / 2;
+            const bulletTop = bullet.y - bulletSize / 2;
+            const bulletBottom = bullet.y + bulletSize / 2;
     
-        //     const wallLeft = wall.x;
-        //     const wallRight = wall.x + tileSize;
-        //     const wallTop = wall.y;
-        //     const wallBottom = wall.y + tileSize;
+            const wallLeft = wall.x;
+            const wallRight = wall.x + tileSize;
+            const wallTop = wall.y;
+            const wallBottom = wall.y + tileSize;
     
-        //     if (bulletRight > wallLeft && bulletLeft < wallRight &&
-        //         bulletBottom > wallTop && bulletTop < wallBottom) {
-        //             this.app.stage.removeChild(bullet);
-        //             this.bullets.splice(this.bullets.indexOf(bullet), 1);
-        //             break;
-        //     }
-        // }
+            if (bulletRight > wallLeft && bulletLeft < wallRight &&
+                bulletBottom > wallTop && bulletTop < wallBottom) {
+                    this.app.stage.removeChild(bullet);
+                    this.bullets.splice(this.bullets.indexOf(bullet), 1);
+                    break;
+            }
+        }
     }
 
     addToStage() {

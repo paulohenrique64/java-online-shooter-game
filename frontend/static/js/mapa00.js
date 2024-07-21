@@ -2,22 +2,40 @@ import { Player } from './player.js';
 
 // game
 const tileSize = 110;
-// let wallPosition = []; // Corrigido para inicializar como um array vazio []
 let app;
 let player;
 let localPlayerList = [];
+let userdata = undefined;
 
 // websockets
-var stompClient = null;
-var userdata = null;
+var stompClient = Stomp.client('ws://localhost:8080/socket');
 
 // keyboard keys
 let keys = {};
 
+function loadUserData() {
+    const options = {
+        credentials: 'include',
+        method: "GET",
+    };
+
+    fetch('http://localhost:8080/userdata', options)
+        .then(response => {
+           response.json()
+            .then(responseJson => {
+                userdata = responseJson.user;
+            })
+            .catch(error => {
+                console.log(error);
+            })
+        })
+        .catch(error => {
+            console.log(error);
+        })
+}
+
 // connecting to web sockets server "routes"
 function connect() {
-    stompClient = Stomp.client('ws://localhost:8080/socket');
-
     stompClient.connect({}, function (frame) {
         //
         // GAME LOGIC
@@ -54,7 +72,14 @@ function connect() {
             console.log("CONCLUIMOS")
         }
 
-        function updateGame(playerList) {
+        function getSelfPlayer() {
+            for (let j = 0; j < localPlayerList.length; j++) 
+                if (localPlayerList[j].username === userdata.name) 
+                    return localPlayerList[j];
+        }
+
+        async function updateGame(gameData) {
+            let playerList = gameData.room.playerList;
             var size = Object.keys(playerList).length;
 
             for (let i = 0; i < size; i++) {
@@ -65,12 +90,13 @@ function connect() {
                     if (localPlayerList[j].username === playerList[i].username) {
                         include = true;
                         localPlayerList[j].setPosition(playerList[i].x, playerList[i].y);
+                        localPlayerList[j].weapon.sprite.rotation = playerList[i].weapon.angle;
                     }
                 }
 
                 // create players
                 if (!include) {
-                    player = new Player(playerList[i].username, app);
+                    player = new Player(playerList[i].username, app, gameData.room.gameMap.positionWall);
                     player.setInitialPosition(playerList[i].x, playerList[i].y);
                     localPlayerList.push(player);
                     app.stage.addChild(player.sprite);
@@ -105,10 +131,11 @@ function connect() {
         stompClient.subscribe('/log/start-game', function (response) {
             let gameData = JSON.parse(response.body)
             let mapGame = gameData.room.gameMap.map;
-            console.log("============== MAP GAME ===============");
-            console.log(mapGame);
-                      
+
             // receive mapGame from server
+            // console.log("============== MAP GAME ===============");
+            // console.log(mapGame); 
+
             for (let i = 0; i < mapGame.length; i++) {
                 for (let j = 0; j < mapGame[0].length; j++) {
                     if (mapGame[i][j] === 1) {
@@ -123,12 +150,16 @@ function connect() {
                 }
             }
 
-            updateGame(gameData.room.playerList);
+            updateGame(gameData)
+                .then(() => {
+                    let selfPlayer = getSelfPlayer();
+                    selfPlayer.weapon.app.renderer.plugins.interaction.on('mousemove', selfPlayer.weapon.onMouseMove.bind(selfPlayer.weapon));
+                })
         });
 
         stompClient.subscribe('/log/game-data', function (response) {
             let gameData = JSON.parse(response.body)
-            updateGame(gameData.room.playerList)
+            updateGame(gameData)
         });
 
         // starting game
@@ -174,15 +205,19 @@ function connect() {
 
         document.querySelector(".gameDiv").addEventListener('mousedown', () => {
             console.log("Estou atirando");
+            stompClient.send("/app/weapon-movement", {}, JSON.stringify({angle: getSelfPlayer().weapon.sprite.rotation}));
         });
+
         document.querySelector(".gameDiv").addEventListener('mouseup', () => {
             console.log("Parei de atirar");
+            console.log(getSelfPlayer());
         });
-
-        // this.app.renderer.plugins.interaction.on('mousemove', this.onMouseMove.bind(this));
-
-
+        document.querySelector(".gameDiv").addEventListener('mousemove', () => {
+            console.log("Rodando mouse");
+            stompClient.send("/app/weapon-movement", {}, JSON.stringify({angle: getSelfPlayer().weapon.sprite.rotation}));
+        });
     });
 }
 
+loadUserData()
 connect();

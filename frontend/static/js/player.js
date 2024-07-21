@@ -1,11 +1,12 @@
 import { Weapon } from "./weapon.js";
 
 export class Player {
-    constructor(username, app) {
+    constructor(username, app, positionWall) {
         this.username = username;
         this.app = app;
         this.speedPlayer = 5;
         this.weaponUse = 'none';
+        this.positionWall = positionWall;
         this.setup();
     }
 

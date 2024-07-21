@@ -2,10 +2,7 @@ package com.brothers.shooter_game.controllers;
 
 import com.brothers.shooter_game.models.auth.Session;
 import com.brothers.shooter_game.models.auth.User;
-import com.brothers.shooter_game.models.game.OnlinePlayersListDTO;
-import com.brothers.shooter_game.models.game.Player;
-import com.brothers.shooter_game.models.game.Room;
-import com.brothers.shooter_game.models.game.RoomDTO;
+import com.brothers.shooter_game.models.game.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,6 +48,7 @@ public class GameController implements ApplicationListener {
     @MessageMapping("/game-data")
     @SendTo("/log/game-data")
     public RoomDTO gameData(UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws Exception {
+        User userdata = (User) usernamePasswordAuthenticationToken.getPrincipal();
         return new RoomDTO(this.gameRoom);
     }
 
@@ -57,16 +56,37 @@ public class GameController implements ApplicationListener {
     @SendTo("/log/game-data")
     public RoomDTO updatePlayerPosition(@Payload String message, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws Exception {
         User userdata = (User) usernamePasswordAuthenticationToken.getPrincipal();
-        System.out.println("player: " + userdata.getName() + " se moveu para a: " + message.toString());
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(message);
 
         gameRoom.movePlayer(userdata.getName(), jsonNode.get("key").toString());
-        System.out.println(jsonNode.get("key"));
+        return new RoomDTO(this.gameRoom);
+    }
+
+    @MessageMapping("/fire")
+    @SendTo("/log/game-data")
+    public RoomDTO fire(UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws Exception {
+        User userdata = (User) usernamePasswordAuthenticationToken.getPrincipal();
 
         return new RoomDTO(this.gameRoom);
     }
+
+    @MessageMapping("/weapon-movement")
+    @SendTo("/log/game-data")
+    public RoomDTO weaponMovement(@Payload String message, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws Exception {
+        User userdata = (User) usernamePasswordAuthenticationToken.getPrincipal();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(message);
+
+        double angle = jsonNode.get("angle").decimalValue().doubleValue();
+        System.out.println(angle);
+
+        this.gameRoom.setPlayerWeaponAngle(angle, userdata.getName());
+        return new RoomDTO(this.gameRoom);
+    }
+
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
