@@ -1,6 +1,6 @@
 package com.brothers.shooter_game.controllers;
 
-import com.brothers.shooter_game.Models.Greeting;
+import com.brothers.shooter_game.models.others.Greeting;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

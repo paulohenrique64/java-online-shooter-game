@@ -1,4 +1,4 @@
-package com.brothers.shooter_game.Models;
+package com.brothers.shooter_game.models.auth;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;

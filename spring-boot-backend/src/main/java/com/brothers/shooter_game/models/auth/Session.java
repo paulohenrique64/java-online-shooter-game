@@ -1,4 +1,4 @@
-package com.brothers.shooter_game.Models;
+package com.brothers.shooter_game.models.auth;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.data.annotation.Id;

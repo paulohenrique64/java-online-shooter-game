@@ -88,5 +88,21 @@ logoutButton.addEventListener("click", function(obj) {
         });
 });
 
+const startGameButton = document.querySelector(".start-game-button");
+startGameButton.addEventListener("click", function(obj) {
+    const options = {
+        credentials: 'include',
+        method: "GET",
+    };
+
+    fetch("http://localhost:8080/game/", options)
+        .then(response => {
+            console.log(response.status);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+});
+
 connect();
 getUserData();

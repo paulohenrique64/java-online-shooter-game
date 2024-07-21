@@ -1,8 +1,8 @@
 package com.brothers.shooter_game.controllers;
 
-import com.brothers.shooter_game.Models.OnlinePlayersListDTO;
-import com.brothers.shooter_game.Models.Session;
-import com.brothers.shooter_game.Models.User;
+import com.brothers.shooter_game.models.game.OnlinePlayersListDTO;
+import com.brothers.shooter_game.models.auth.Session;
+import com.brothers.shooter_game.models.auth.User;
 import com.brothers.shooter_game.repository.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
@@ -16,7 +16,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
