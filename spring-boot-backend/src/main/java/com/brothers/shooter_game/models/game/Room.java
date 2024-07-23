@@ -48,7 +48,7 @@ public class Room {
     }
 
     // THIS METHOD IS VOID FOR WHILE
-    // IN FUTURE, THIS METHOD WILL RETURN TRUE FOR SUCESS FIRE
+    // IN THE FUTURE, THIS METHOD WILL RETURN TRUE FOR SUCESS FIRE
     public void playerFire(String username) {
         // simular um tiro saindo de player e batendo no gameMap wall
         this.playerList.stream().forEach(player -> {

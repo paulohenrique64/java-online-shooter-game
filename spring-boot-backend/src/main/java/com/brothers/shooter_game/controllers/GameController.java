@@ -18,6 +18,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -65,11 +67,25 @@ public class GameController implements ApplicationListener {
     }
 
     @MessageMapping("/fire")
-    @SendTo("/log/game-data")
-    public RoomDTO fire(UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws Exception {
+    @SendTo("/log/fire")
+    public BulletDTO fire(@Payload String message, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws Exception {
         User userdata = (User) usernamePasswordAuthenticationToken.getPrincipal();
 
-        return new RoomDTO(this.gameRoom);
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(message);
+
+        double x = jsonNode.get("x").decimalValue().doubleValue();
+        System.out.println(x);
+
+        double y = jsonNode.get("y").decimalValue().doubleValue();
+        System.out.println(y);
+
+        double angle = jsonNode.get("angle").decimalValue().doubleValue();
+        System.out.println(y);
+
+//        gameRoom.getGameMap().setLastShooterCordinate(new Point2D.Double(x, y));
+
+        return new BulletDTO(new Bullet(x, y, angle));
     }
 
     @MessageMapping("/weapon-movement")

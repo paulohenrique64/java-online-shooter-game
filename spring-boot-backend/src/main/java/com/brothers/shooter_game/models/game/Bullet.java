@@ -1,31 +1,38 @@
 package com.brothers.shooter_game.models.game;
 
 public class Bullet {
-    private double x;
-    private double y;
-    private double rotation;
+    private double initialXPosition;
+    private double initialYPosition;
+    private double angle;
     private double speed;
 
-    public Bullet(double x, double y, double rotation, double speed) {
-        this.x = x;
-        this.y = y;
-        this.rotation = rotation;
+    public Bullet(double x, double y, double angle, double speed) {
+        this.initialXPosition = x;
+        this.initialYPosition = y;
+        this.angle = angle;
         this.speed = speed;
     }
 
-    public double getX() {
-        return x;
+    public Bullet(double x, double y, double angle) {
+        this.initialXPosition = x;
+        this.initialYPosition = y;
+        this.angle = angle;
+        this.speed = 10;
     }
 
-    public double getY() {
-        return y;
+    public double getInitialXPosition() {
+        return initialXPosition;
     }
 
-    public double getRotation() {
-        return rotation;
+    public double getInitialYPosition() {
+        return initialYPosition;
+    }
+
+    public double getAngle() {
+        return this.angle;
     }
 
     public double getSpeed() {
-        return speed;
+        return this.speed;
     }
 }

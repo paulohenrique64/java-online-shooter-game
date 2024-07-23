@@ -1,17 +1,19 @@
 import { Player } from './player.js';
 
-// game
-const tileSize = 110;
-let app;
-let player;
-let localPlayerList = [];
-let userdata = undefined;
-
 // websockets
 var stompClient = Stomp.client('ws://localhost:8080/socket');
 
 // keyboard keys
 let keys = {};
+
+// game
+const tileSize = 110;
+let app;
+let userdata = undefined;
+let localPlayerList = [];
+let bullets = [];
+let positionWall;
+
 
 function loadUserData() {
     const options = {
@@ -38,7 +40,9 @@ function loadUserData() {
 function connect() {
     stompClient.connect({}, function (frame) {
         //
-        // GAME LOGIC
+        //
+        // game map render and some configurations
+        //
         //
 
         app = new PIXI.Application({
@@ -72,6 +76,14 @@ function connect() {
             console.log("CONCLUIMOS")
         }
 
+        //
+        //
+        // game client logic and websockets configurations and implementations
+        //
+        //
+
+        app.ticker.add(gameLoop);
+
         function getSelfPlayer() {
             for (let j = 0; j < localPlayerList.length; j++) 
                 if (localPlayerList[j].username === userdata.name) 
@@ -96,7 +108,7 @@ function connect() {
 
                 // create players
                 if (!include) {
-                    player = new Player(playerList[i].username, app, gameData.room.gameMap.positionWall);
+                    let player = new Player(playerList[i].username, app);
                     player.setInitialPosition(playerList[i].x, playerList[i].y);
                     localPlayerList.push(player);
                     app.stage.addChild(player.sprite);
@@ -124,10 +136,6 @@ function connect() {
             }
         }
 
-        //
-        // WEBSOCKETS
-        //
-
         stompClient.subscribe('/log/start-game', function (response) {
             let gameData = JSON.parse(response.body)
             let mapGame = gameData.room.gameMap.map;
@@ -152,6 +160,7 @@ function connect() {
 
             updateGame(gameData)
                 .then(() => {
+                    positionWall = gameData.room.gameMap.positionWall;
                     let selfPlayer = getSelfPlayer();
                     selfPlayer.weapon.app.renderer.plugins.interaction.on('mousemove', selfPlayer.weapon.onMouseMove.bind(selfPlayer.weapon));
                 })
@@ -162,11 +171,19 @@ function connect() {
             updateGame(gameData)
         });
 
+        stompClient.subscribe('/log/fire', function (response) {
+            let fireData = JSON.parse(response.body);
+            let bullet = fireData.bullet;
+            fire(bullet.initialXPosition, bullet.initialYPosition, bullet.angle);
+        });
+
         // starting game
         stompClient.send("/app/start-game", {}, JSON.stringify({}));
 
         //
-        // player and keyboard config
+        //
+        // player movement and keyboard config
+        //
         //
 
         window.addEventListener('keydown', (key) => keyDown(key));
@@ -178,6 +195,12 @@ function connect() {
     
         function keyUp(key) {
             keys[key.keyCode] = false;
+        }
+
+        let i = 0;
+        while (localPlayerList.length === 2) {
+            console.log(i + 1);
+            i = i + 1;
         }
 
         app.ticker.add(() => {
@@ -200,24 +223,135 @@ function connect() {
         });
 
         //
-        // weapon and mouse config
+        //
+        // weapon, shooter and mouse config
+        //
         //
 
         document.querySelector(".gameDiv").addEventListener('mousedown', () => {
-            console.log("Estou atirando");
-            stompClient.send("/app/weapon-movement", {}, JSON.stringify({angle: getSelfPlayer().weapon.sprite.rotation}));
+            getSelfPlayer().weapon.isFiring = true;
+            console.log("firing");
         });
 
         document.querySelector(".gameDiv").addEventListener('mouseup', () => {
-            console.log("Parei de atirar");
-            console.log(getSelfPlayer());
+            getSelfPlayer().weapon.isFiring = false;
+            console.log("stopped fire");
         });
+
         document.querySelector(".gameDiv").addEventListener('mousemove', () => {
-            console.log("Rodando mouse");
             stompClient.send("/app/weapon-movement", {}, JSON.stringify({angle: getSelfPlayer().weapon.sprite.rotation}));
+            console.log("rotating mouse");
         });
+
+        function fire(tipX, tipY, angle) {
+            const createBullet = () => {
+                let bullet = new PIXI.Sprite.from("static/imagens/bullet.png");
+                let selfPlayer = getSelfPlayer();
+
+                bullet.anchor.set(0.5);
+
+                // const angle = selfPlayer.weapon.sprite.rotation;
+                // const tipX = selfPlayer.sprite.x + Math.cos(angle) * selfPlayer.sprite.height;
+                // const tipY = selfPlayer.sprite.y + Math.sin(angle) * selfPlayer.sprite.height;
+
+                bullet.x = tipX;
+                bullet.y = tipY;
+                bullet.rotation = angle;
+                bullet.speed = 20;
+                app.stage.addChild(bullet);
+                return bullet;
+            };
+            
+            let bullet = createBullet();
+            bullets.push(bullet);
+        }
+
+        function gameLoop() {
+            let selfPlayer = getSelfPlayer();
+            const angle = selfPlayer.weapon.sprite.rotation;
+
+            if (selfPlayer.weapon.isFiring && selfPlayer.weapon.framesSinceLastFire >= selfPlayer.weapon.fireRate) {
+                stompClient.send("/app/fire", {}, JSON.stringify({x: selfPlayer.sprite.x + Math.cos(angle) * selfPlayer.sprite.height, y: selfPlayer.sprite.y + Math.sin(angle) * selfPlayer.sprite.height, angle: selfPlayer.weapon.sprite.rotation}));
+                selfPlayer.weapon.framesSinceLastFire = 0;
+            }
+
+            selfPlayer.weapon.framesSinceLastFire += 1;
+
+            for (let i = 0; i < bullets.length; i++) {       
+                bullets[i].x += Math.cos(bullets[i].rotation) * bullets[i].speed;
+                bullets[i].y += Math.sin(bullets[i].rotation) * bullets[i].speed;
+
+                if (!checkBulletPlayerCollision(bullets[i]))
+                    checkBulletMapCollision(bullets[i]);
+            }
+        }
+
+        function checkBulletMapCollision(bullet) {
+            const bulletSize = 9;
+            const tileSize = 110;
+
+            if (bullet.x < 0 || bullet.x > app.renderer.width ||
+                bullet.y < 0 || bullet.y > app.renderer.height) {
+                app.stage.removeChild(bullet);
+                bullets.splice(bullets.indexOf(bullet), 1);
+                return true;
+            } 
+    
+            for (let i = 0; i < positionWall.length; i++) {
+                const wall = positionWall[i];
+        
+                const bulletLeft = bullet.x - bulletSize / 2;
+                const bulletRight = bullet.x + bulletSize / 2;
+                const bulletTop = bullet.y - bulletSize / 2;
+                const bulletBottom = bullet.y + bulletSize / 2;
+        
+                const wallLeft = wall.x;
+                const wallRight = wall.x + tileSize;
+                const wallTop = wall.y;
+                const wallBottom = wall.y + tileSize;
+        
+                if (bulletRight > wallLeft && bulletLeft < wallRight &&
+                    bulletBottom > wallTop && bulletTop < wallBottom) {
+                        app.stage.removeChild(bullet);
+                        bullets.splice(bullets.indexOf(bullet), 1);
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        function checkBulletPlayerCollision(bullet) {
+            const bulletSize = 9;
+            const playerSize = 35;
+    
+            for (let i = 0; i < localPlayerList.length; i++) {
+                const player = localPlayerList[i];
+        
+                const bulletLeft = bullet.x - bulletSize / 2;
+                const bulletRight = bullet.x + bulletSize / 2;
+                const bulletTop = bullet.y - bulletSize / 2;
+                const bulletBottom = bullet.y + bulletSize / 2;
+        
+                const playerLeft = player.sprite.x - playerSize / 2;
+                const playerRight = player.sprite.x + playerSize / 2;
+                const playerTop = player.sprite.y - playerSize / 2;
+                const playerBottom = player.sprite.y + playerSize / 2;
+        
+                if (bulletRight > playerLeft && bulletLeft < playerRight &&
+                    bulletBottom > playerTop && bulletTop < playerBottom) {
+                        app.stage.removeChild(bullet);
+                        bullets.splice(bullets.indexOf(bullet), 1);
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+
     });
 }
 
-loadUserData()
+loadUserData();
 connect();

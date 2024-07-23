@@ -39,7 +39,7 @@ public class Player {
     }
 
     public void fire(List<Player> playerList) {
-        Bullet bullet = new Bullet(this.x, this.y, this.weapon.getAngle(), 20);
+//        Bullet bullet = new Bullet(this.x, this.y, this.weapon.getAngle(), 20);
 
 
     }

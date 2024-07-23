@@ -1,13 +1,13 @@
 import { Weapon } from "./weapon.js";
 
 export class Player {
-    constructor(username, app, positionWall) {
+    constructor(username, app) {
         this.username = username;
         this.app = app;
         this.speedPlayer = 5;
         this.weaponUse = 'none';
-        this.positionWall = positionWall;
         this.setup();
+        this.app.ticker.add(this.gameLoop.bind(this));
     }
 
     setInitialPosition(x, y) {
@@ -21,7 +21,7 @@ export class Player {
         this.sprite = new PIXI.Sprite(texture);
         this.sprite.anchor.set(0.5);
 
-        this.weapon = new Weapon(this.app, 'static/imagens/rifle.png', 10, 20, 10, this.positionWall);
+        this.weapon = new Weapon(this.app, 'static/imagens/rifle.png', 10, 20, 10);
         this.weapon.position(this.sprite.x, this.sprite.y);
         this.weapon.addToStage();
 
@@ -36,8 +36,11 @@ export class Player {
         this.weapon.position(this.sprite.x, this.sprite.y);
     }
 
+    gameLoop() { }
+
     delete() {
         this.sprite.destroy();
+        this.weapon.sprite.destroy();
         this.weapon.removeFromStage();
     }
 }

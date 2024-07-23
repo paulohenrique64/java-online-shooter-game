@@ -1,6 +1,7 @@
 package com.brothers.shooter_game.models.game;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 public class GameMap {
     private final List<List<Integer>> map = new ArrayList<>();
     private final List<Point> positionWall = new ArrayList<Point>();
+//    private Point2D.Double lastShooterCordinate;
 
     public GameMap() {
         // map 1
@@ -38,4 +40,12 @@ public class GameMap {
     public List<Point> getPositionWall() {
         return positionWall;
     }
+
+//    public Point2D.Double getLastShooterCordinate() {
+//        return lastShooterCordinate;
+//    }
+//
+//    public void setLastShooterCordinate(Point2D.Double lastShooterCordinate) {
+//        this.lastShooterCordinate = lastShooterCordinate;
+//    }
 }
