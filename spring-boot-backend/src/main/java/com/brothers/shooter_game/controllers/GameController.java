@@ -39,7 +39,7 @@ public class GameController implements ApplicationListener {
     @SendTo("/log/start-game")
     private RoomDTO startGame(UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken, @Header("simpSessionId") String sessionId) {
         User userdata = (User) usernamePasswordAuthenticationToken.getPrincipal();
-        Player player = new Player(sessionId, userdata.getName(), gameRoom.getGameMap().getPositionWall());
+        Player player = new Player(sessionId, userdata.getName(), gameRoom.getGameMap().getPositionWall(), gameRoom.getGameMap().getRespawnArea());
 
         if (gameRoom.addPlayer(player))
             System.out.println("new player in the room " + gameRoom.getId() + " with name " + player.getUsername() + " and sessionId " + sessionId);
@@ -70,22 +70,28 @@ public class GameController implements ApplicationListener {
     @SendTo("/log/fire")
     public BulletDTO fire(@Payload String message, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws Exception {
         User userdata = (User) usernamePasswordAuthenticationToken.getPrincipal();
-
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(message);
 
         double x = jsonNode.get("x").decimalValue().doubleValue();
-        System.out.println(x);
-
         double y = jsonNode.get("y").decimalValue().doubleValue();
-        System.out.println(y);
-
         double angle = jsonNode.get("angle").decimalValue().doubleValue();
-        System.out.println(y);
 
-//        gameRoom.getGameMap().setLastShooterCordinate(new Point2D.Double(x, y));
+        Bullet bullet = new Bullet(new Point2D.Double(x, y), angle);
 
-        return new BulletDTO(new Bullet(x, y, angle));
+        if (gameRoom.playerFire(userdata.getName(), bullet))
+            this.sendGameData();
+
+        return new BulletDTO(new Bullet(new Point2D.Double(x, y), angle));
+    }
+
+    @MessageMapping("/respawn")
+    @SendTo("/log/game-data")
+    public RoomDTO respawnPlayer(UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws Exception {
+        User userdata = (User) usernamePasswordAuthenticationToken.getPrincipal();
+        System.out.println("o jogador " + userdata.getName() + " morreu");
+        gameRoom.respawn(userdata.getName());
+        return new RoomDTO(this.gameRoom);
     }
 
     @MessageMapping("/weapon-movement")
@@ -97,7 +103,6 @@ public class GameController implements ApplicationListener {
         JsonNode jsonNode = objectMapper.readTree(message);
 
         double angle = jsonNode.get("angle").decimalValue().doubleValue();
-        System.out.println(angle);
 
         this.gameRoom.setPlayerWeaponAngle(angle, userdata.getName());
         return new RoomDTO(this.gameRoom);

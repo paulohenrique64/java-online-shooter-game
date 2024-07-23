@@ -2,7 +2,9 @@ package com.brothers.shooter_game.models.game;
 
 import org.springframework.stereotype.Component;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 @Component
 public class Room {
@@ -47,19 +49,90 @@ public class Room {
         return false;
     }
 
-    // THIS METHOD IS VOID FOR WHILE
-    // IN THE FUTURE, THIS METHOD WILL RETURN TRUE FOR SUCESS FIRE
-    public void playerFire(String username) {
-        // simular um tiro saindo de player e batendo no gameMap wall
-        this.playerList.stream().forEach(player -> {
-            if (player.getUsername().equals(username)) {
-                player.fire(this.playerList);
+    public boolean playerFire(String username, Bullet bullet) {
+        Player shooter = null;
+        boolean mapCollision = false;
+        boolean playerCollision = false;
+
+        for (Player player : this.playerList)
+            if (player.getUsername().equals(username))  shooter = player;
+
+        do {
+            mapCollision = checkBulletMapCollision(bullet);
+            playerCollision = checkBulletPlayerCollision(bullet);
+
+            if (!mapCollision && !playerCollision) {
+                // update shooter position
+                bullet.getPosition().x += Math.cos(bullet.getAngle()) * bullet.getSpeed();
+                bullet.getPosition().y += Math.sin(bullet.getAngle()) * bullet.getSpeed();
             }
-        });
+
+            if (playerCollision) return true;
+        } while (!mapCollision && !playerCollision);
+
+        return false;
     }
 
-    // THIS METHOD IS VOID FOR WHILE
-    // IN FUTURE, THIS METHOD WILL RETURN TRUE FOR SUCESS MOVE ANGLE
+    public boolean checkBulletMapCollision(Bullet bullet) {
+        int bulletSize = 9;
+        int tileSize = 110;
+        List<Point> positionWall = gameMap.getPositionWall();
+
+        double bulletLeft = bullet.getPosition().x - bulletSize / (double) 2;
+        double bulletRight = bullet.getPosition().x + bulletSize / (double) 2;
+        double bulletTop = bullet.getPosition().y - bulletSize / (double) 2;
+        double bulletBottom = bullet.getPosition().y + bulletSize / (double) 2;
+
+        for (int i = 0; i < positionWall.size(); i++) {
+            Point wall = positionWall.get(i);
+
+            double wallLeft = wall.x;
+            double wallRight = wall.x + tileSize;
+            double wallTop = wall.y;
+            double wallBottom = wall.y + tileSize;
+
+            if (bulletRight > wallLeft && bulletLeft < wallRight && bulletBottom > wallTop && bulletTop < wallBottom) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean checkBulletPlayerCollision(Bullet bullet) {
+        int bulletSize = 9;
+        int playerSize = 35;
+
+        double bulletLeft = bullet.getPosition().x - bulletSize / (double) 2;
+        double bulletRight = bullet.getPosition().x + bulletSize / (double) 2;
+        double bulletTop = bullet.getPosition().y - bulletSize / (double) 2;
+        double bulletBottom = bullet.getPosition().y + bulletSize / (double) 2;
+
+        for (int i = 0; i < playerList.size(); i++) {
+            Player player = playerList.get(i);
+
+            double playerLeft = player.getPosition().x - playerSize / (double)2;
+            double playerRight = player.getPosition().x + playerSize / (double) 2;
+            double playerTop = player.getPosition().y - playerSize / (double) 2;
+            double playerBottom = player.getPosition().y + playerSize / (double) 2;
+
+            if (bulletRight > playerLeft && bulletLeft < playerRight && bulletBottom > playerTop && bulletTop < playerBottom) {
+                player.damage();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void respawn(String username) {
+        for (Player player : this.playerList) {
+            if (player.getUsername().equals(username)) {
+                player.respawn();
+            }
+        }
+    }
+
     public void setPlayerWeaponAngle(double angle, String username) {
         this.playerList.stream().forEach(player -> {
             if (player.getUsername().equals(username)) {

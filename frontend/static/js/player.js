@@ -8,6 +8,7 @@ export class Player {
         this.weaponUse = 'none';
         this.setup();
         this.app.ticker.add(this.gameLoop.bind(this));
+        this.alive = true;
     }
 
     setInitialPosition(x, y) {

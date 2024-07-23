@@ -9,21 +9,23 @@ public class Player {
     private String playerSessionId;
     private String username;
     private int life;
-    private double x;
-    private double y;
+    private boolean alive;
+    private Point2D.Double position;
     private int speedPlayer;
     private List<Point> positionWall;
+    private List<Point> respawnArea;
     private Weapon weapon;
 
-    public Player(String playerSessionId, String username, List<Point> positionWall) {
+    public Player(String playerSessionId, String username, List<Point> positionWall, List<Point> respawnArea) {
         this.playerSessionId = playerSessionId;
         this.username = username;
         this.life = 100;
         this.positionWall = positionWall;
+        this.respawnArea = respawnArea;
         this.speedPlayer = 5;
-        this.x = 200;
-        this.y = 200;
+        this.position = new Point2D.Double(200, 200);
         this.weapon = new Weapon();
+        this.alive = true;
     }
 
     public int getLife() {
@@ -38,18 +40,47 @@ public class Player {
         this.username = username;
     }
 
-    public void fire(List<Player> playerList) {
-//        Bullet bullet = new Bullet(this.x, this.y, this.weapon.getAngle(), 20);
-
-
-    }
-
     public void respawn() {
         this.life = 100;
+        this.alive = true;
+
+        do {
+            this.position.x = Math.random() * 1000;
+            this.position.y = Math.random() * 1000;
+        } while (!this.checkPlayerInRespawnArea());
+    }
+
+    public boolean checkPlayerInRespawnArea() {
+        int playerSize = 35;
+        int tileSize = 90;
+
+        double playerLeft = position.x - playerSize / (double) 2;
+        double playerRight = position.x + playerSize / (double) 2;
+        double playerTop = position.y - playerSize / (double) 2;
+        double playerBottom = position.y + playerSize / (double) 2;
+
+        for (int i = 0; i < respawnArea.size(); i++) {
+            Point area = respawnArea.get(i);
+
+            double areaLeft = area.x;
+            double areaRight = area.x + tileSize;
+            double areaTop = area.y;
+            double areaBottom = area.y + tileSize;
+
+            if (playerRight > areaLeft && playerLeft < areaRight && playerBottom > areaTop && playerTop < areaBottom) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void damage() {
-        this.life -= 5;
+        this.life -= 20;
+
+        if (this.life <= 0) {
+            this.alive = false;
+        }
     }
 
     public boolean alive() {
@@ -57,38 +88,38 @@ public class Player {
     }
 
     public void moveDown() {
-        this.y += this.speedPlayer;
+        this.position.y += this.speedPlayer;
         this.checkPosition();
     }
 
     public void moveUp() {
-        this.y -= this.speedPlayer;
+        this.position.y -= this.speedPlayer;
         this.checkPosition();
     }
 
     public void moveRight() {
-        this.x += this.speedPlayer;
+        this.position.x += this.speedPlayer;
         this.checkPosition();
     }
 
     public void moveLeft() {
-        this.x -= this.speedPlayer;
+        this.position.x -= this.speedPlayer;
         this.checkPosition();
     }
 
     public void checkPosition() {
-        double antX = this.x;
-        double antY = this.y;
+        double antX = this.position.x;
+        double antY = this.position.y;
         double playerSize = 30;
         double tileSize = 110;
 
          for (int i = 0; i < this.positionWall.size(); i++) {
              Point wall = this.positionWall.get(i);
 
-             double playerLeft = this.x - playerSize / 2;
-             double playerRight = this.x + playerSize / 2;
-             double playerTop = this.y - playerSize / 2;
-             double playerBottom = this.y + playerSize / 2;
+             double playerLeft = this.position.x - playerSize / 2;
+             double playerRight = this.position.x + playerSize / 2;
+             double playerTop = this.position.y - playerSize / 2;
+             double playerBottom = this.position.y + playerSize / 2;
 
              double wallLeft = wall.x;
              double wallRight = wall.x + tileSize;
@@ -103,27 +134,51 @@ public class Player {
 
                  if (overlapX < overlapY) {
                      if (playerRight > wallLeft && antX < wall.x) {
-                         this.x = wallLeft - playerSize / 2;
+                         this.position.x = wallLeft - playerSize / 2;
                      } else if (playerLeft < wallRight && antX > wall.x) {
-                         this.x = wallRight + playerSize / 2;
+                         this.position.x = wallRight + playerSize / 2;
                      }
                  } else {
                      if (playerBottom > wallTop && antY < wall.y) {
-                         this.y = wallTop - playerSize / 2;
+                         this.position.y = wallTop - playerSize / 2;
                      } else if (playerTop < wallBottom && antY > wall.y) {
-                         this.y = wallBottom + playerSize / 2;
+                         this.position.y = wallBottom + playerSize / 2;
                      }
                  }
              }
          }
     }
 
-    public double getY() {
-        return y;
+    public void setPlayerSessionId(String playerSessionId) {
+        this.playerSessionId = playerSessionId;
     }
 
-    public double getX() {
-        return x;
+    public void setLife(int life) {
+        this.life = life;
+    }
+
+    public Point2D.Double getPosition() {
+        return position;
+    }
+
+    public void setPosition(Point2D.Double position) {
+        this.position = position;
+    }
+
+    public void setSpeedPlayer(int speedPlayer) {
+        this.speedPlayer = speedPlayer;
+    }
+
+    public List<Point> getPositionWall() {
+        return positionWall;
+    }
+
+    public void setPositionWall(List<Point> positionWall) {
+        this.positionWall = positionWall;
+    }
+
+    public void setWeapon(Weapon weapon) {
+        this.weapon = weapon;
     }
 
     public int getSpeedPlayer() {
@@ -136,5 +191,13 @@ public class Player {
 
     public Weapon getWeapon() {
         return weapon;
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
     }
 }

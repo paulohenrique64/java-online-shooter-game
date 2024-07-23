@@ -97,21 +97,32 @@ function connect() {
             for (let i = 0; i < size; i++) {
                 let include = false;
 
-                // update all players positions
+                // update all players data
                 for (let j = 0; j < localPlayerList.length; j++) {
                     if (localPlayerList[j].username === playerList[i].username) {
                         include = true;
-                        localPlayerList[j].setPosition(playerList[i].x, playerList[i].y);
+                        localPlayerList[j].setPosition(playerList[i].position.x, playerList[i].position.y);
                         localPlayerList[j].weapon.sprite.rotation = playerList[i].weapon.angle;
+                        localPlayerList[j].alive = playerList[i].alive;
                     }
                 }
 
                 // create players
                 if (!include) {
                     let player = new Player(playerList[i].username, app);
-                    player.setInitialPosition(playerList[i].x, playerList[i].y);
+                    player.setInitialPosition(playerList[i].position.x, playerList[i].position.y);
                     localPlayerList.push(player);
                     app.stage.addChild(player.sprite);
+                }
+            }
+
+            // delete death players
+            for (let i = 0; i < localPlayerList.length; i++) {
+                if (!playerList[i].alive) {
+                    console.log(`THE PLAYER ${localPlayerList[i].username} DIED`);
+                    // localPlayerList[i].delete();
+                    // localPlayerList.splice(i, i);
+                    // console.log(localPlayerList.length);
                 }
             }
 
@@ -174,7 +185,7 @@ function connect() {
         stompClient.subscribe('/log/fire', function (response) {
             let fireData = JSON.parse(response.body);
             let bullet = fireData.bullet;
-            fire(bullet.initialXPosition, bullet.initialYPosition, bullet.angle);
+            fire(bullet.position.x, bullet.position.y, bullet.angle, bullet.speed);
         });
 
         // starting game
@@ -243,7 +254,7 @@ function connect() {
             console.log("rotating mouse");
         });
 
-        function fire(tipX, tipY, angle) {
+        function fire(tipX, tipY, angle, speed) {
             const createBullet = () => {
                 let bullet = new PIXI.Sprite.from("static/imagens/bullet.png");
                 let selfPlayer = getSelfPlayer();
@@ -257,7 +268,7 @@ function connect() {
                 bullet.x = tipX;
                 bullet.y = tipY;
                 bullet.rotation = angle;
-                bullet.speed = 20;
+                bullet.speed = speed;
                 app.stage.addChild(bullet);
                 return bullet;
             };
@@ -268,21 +279,27 @@ function connect() {
 
         function gameLoop() {
             let selfPlayer = getSelfPlayer();
-            const angle = selfPlayer.weapon.sprite.rotation;
 
-            if (selfPlayer.weapon.isFiring && selfPlayer.weapon.framesSinceLastFire >= selfPlayer.weapon.fireRate) {
-                stompClient.send("/app/fire", {}, JSON.stringify({x: selfPlayer.sprite.x + Math.cos(angle) * selfPlayer.sprite.height, y: selfPlayer.sprite.y + Math.sin(angle) * selfPlayer.sprite.height, angle: selfPlayer.weapon.sprite.rotation}));
-                selfPlayer.weapon.framesSinceLastFire = 0;
-            }
+            if (!selfPlayer.alive) 
+                stompClient.send("/app/respawn", {}, JSON.stringify({}));
 
-            selfPlayer.weapon.framesSinceLastFire += 1;
+            if (selfPlayer) {
+                const angle = selfPlayer.weapon.sprite.rotation;
 
-            for (let i = 0; i < bullets.length; i++) {       
-                bullets[i].x += Math.cos(bullets[i].rotation) * bullets[i].speed;
-                bullets[i].y += Math.sin(bullets[i].rotation) * bullets[i].speed;
-
-                if (!checkBulletPlayerCollision(bullets[i]))
-                    checkBulletMapCollision(bullets[i]);
+                if (selfPlayer.weapon.isFiring && selfPlayer.weapon.framesSinceLastFire >= selfPlayer.weapon.fireRate) {
+                    stompClient.send("/app/fire", {}, JSON.stringify({x: selfPlayer.sprite.x + Math.cos(angle) * selfPlayer.sprite.height, y: selfPlayer.sprite.y + Math.sin(angle) * selfPlayer.sprite.height, angle: selfPlayer.weapon.sprite.rotation}));
+                    selfPlayer.weapon.framesSinceLastFire = 0;
+                }
+    
+                selfPlayer.weapon.framesSinceLastFire += 1;
+    
+                for (let i = 0; i < bullets.length; i++) {       
+                    bullets[i].x += Math.cos(bullets[i].rotation) * bullets[i].speed;
+                    bullets[i].y += Math.sin(bullets[i].rotation) * bullets[i].speed;
+    
+                    if (!checkBulletPlayerCollision(bullets[i]))
+                        checkBulletMapCollision(bullets[i]);
+                }
             }
         }
 

@@ -1,38 +1,46 @@
 package com.brothers.shooter_game.models.game;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
+
 public class Bullet {
-    private double initialXPosition;
-    private double initialYPosition;
+    private Point2D.Double position;
     private double angle;
     private double speed;
 
-    public Bullet(double x, double y, double angle, double speed) {
-        this.initialXPosition = x;
-        this.initialYPosition = y;
+    public Bullet(Point2D.Double position, double angle, double speed) {
+        this.position = position;
         this.angle = angle;
         this.speed = speed;
     }
 
-    public Bullet(double x, double y, double angle) {
-        this.initialXPosition = x;
-        this.initialYPosition = y;
+    public Bullet(Point2D.Double position, double angle) {
+        this.position = position;
         this.angle = angle;
-        this.speed = 10;
+        this.speed = 40;
     }
 
-    public double getInitialXPosition() {
-        return initialXPosition;
+    public Point2D.Double getPosition() {
+        return position;
     }
 
-    public double getInitialYPosition() {
-        return initialYPosition;
+    public void setPosition(Point2D.Double position) {
+        this.position = position;
     }
 
     public double getAngle() {
-        return this.angle;
+        return angle;
+    }
+
+    public void setAngle(double angle) {
+        this.angle = angle;
     }
 
     public double getSpeed() {
-        return this.speed;
+        return speed;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
     }
 }

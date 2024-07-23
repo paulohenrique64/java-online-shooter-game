@@ -9,7 +9,7 @@ import java.util.List;
 public class GameMap {
     private final List<List<Integer>> map = new ArrayList<>();
     private final List<Point> positionWall = new ArrayList<Point>();
-//    private Point2D.Double lastShooterCordinate;
+    private final List<Point> respawnArea = new ArrayList<Point>();
 
     public GameMap() {
         // map 1
@@ -31,6 +31,16 @@ public class GameMap {
                 }
             }
         }
+
+        // calculate the map respawn area
+        for (int i = 0; i < map.size(); i++) {
+            for (int j = 0; j < map.get(0).size(); j++) {
+                if (this.map.get(i).get(j) == 0) {
+                    int tileSize = 110;
+                    respawnArea.add(new Point(j * tileSize, i * tileSize));
+                }
+            }
+        }
     }
 
     public List<List<Integer>> getMap() {
@@ -41,11 +51,7 @@ public class GameMap {
         return positionWall;
     }
 
-//    public Point2D.Double getLastShooterCordinate() {
-//        return lastShooterCordinate;
-//    }
-//
-//    public void setLastShooterCordinate(Point2D.Double lastShooterCordinate) {
-//        this.lastShooterCordinate = lastShooterCordinate;
-//    }
+    public List<Point> getRespawnArea() {
+        return respawnArea;
+    }
 }
