@@ -15,6 +15,7 @@ public class Player {
     private List<Point> positionWall;
     private List<Point> respawnArea;
     private Weapon weapon;
+    public int kills;
 
     public Player(String playerSessionId, String username, List<Point> positionWall, List<Point> respawnArea) {
         this.playerSessionId = playerSessionId;
@@ -23,9 +24,11 @@ public class Player {
         this.positionWall = positionWall;
         this.respawnArea = respawnArea;
         this.speedPlayer = 5;
-        this.position = new Point2D.Double(200, 200);
         this.weapon = new Weapon();
         this.alive = true;
+        this.position = new Point2D.Double();
+        this.respawn();
+        this.kills = 0;
     }
 
     public int getLife() {
@@ -199,5 +202,13 @@ public class Player {
 
     public void setAlive(boolean alive) {
         this.alive = alive;
+    }
+
+    public int getKills() {
+        return kills;
+    }
+
+    public void setKills(int kills) {
+        this.kills = kills;
     }
 }

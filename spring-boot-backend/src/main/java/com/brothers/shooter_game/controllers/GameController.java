@@ -77,12 +77,12 @@ public class GameController implements ApplicationListener {
         double y = jsonNode.get("y").decimalValue().doubleValue();
         double angle = jsonNode.get("angle").decimalValue().doubleValue();
 
-        Bullet bullet = new Bullet(new Point2D.Double(x, y), angle);
+        Bullet bullet = new Bullet(new Point2D.Double(x, y), angle,  userdata.getName());
 
-        if (gameRoom.playerFire(userdata.getName(), bullet))
+        if (gameRoom.playerFire(bullet))
             this.sendGameData();
 
-        return new BulletDTO(new Bullet(new Point2D.Double(x, y), angle));
+        return new BulletDTO(new Bullet(new Point2D.Double(x, y), angle, userdata.getName()));
     }
 
     @MessageMapping("/respawn")

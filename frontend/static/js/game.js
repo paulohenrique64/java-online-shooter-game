@@ -46,24 +46,26 @@ function connect() {
         //
 
         app = new PIXI.Application({
-            width: window.innerWidth,
-            height: window.innerHeight,
-            backgroundColor: 0xDDDDDD
+            width: window.innerWidth - (window.innerWidth / 2.35),
+            height: window.innerHeight - (window.innerHeight / 9.2),
+            backgroundColor: 0xc4c8d4,
+            view: document.getElementById("gameDiv")
         });
-    
+
         document.querySelector(".gameDiv").appendChild(app.view);
     
+        // loader app
         app.loader.baseUrl = 'static/imagens';
         app.loader.add("sprite01", "player.png")
-                  .add("sprite02", "rifle.png")
-                  .add("sprite03", "bullet.png");
+                    .add("sprite02", "rifle.png")
+                    .add("sprite03", "bullet.png");
     
         app.loader.onProgress.add(showProgress);
         app.loader.onComplete.add(doneLoading);
         app.loader.onError.add(reportError);
     
         app.loader.load();
-    
+     
         function showProgress(e) {
             console.log(e.progress);
         }
@@ -94,6 +96,23 @@ function connect() {
             let playerList = gameData.room.playerList;
             var size = Object.keys(playerList).length;
 
+            var playerListPanel = document.querySelector(".players > ul");
+            var killsListPanel = document.querySelector(".kills > ul");
+
+            playerListPanel.innerHTML = "";
+            killsListPanel.innerHTML = "";
+
+            for (let i = 0; i < size; i++) {
+                let liUsername = document.createElement("li");
+                let liKills = document.createElement("li");
+
+                liUsername.innerText = playerList[i].username;
+                liKills.innerText = playerList[i].kills;
+
+                playerListPanel.appendChild(liUsername);
+                killsListPanel.appendChild(liKills);
+            }
+            
             for (let i = 0; i < size; i++) {
                 let include = false;
 
@@ -151,15 +170,12 @@ function connect() {
             let gameData = JSON.parse(response.body)
             let mapGame = gameData.room.gameMap.map;
 
-            // receive mapGame from server
-            // console.log("============== MAP GAME ===============");
-            // console.log(mapGame); 
-
+            // receive mapGame from server and render
             for (let i = 0; i < mapGame.length; i++) {
                 for (let j = 0; j < mapGame[0].length; j++) {
                     if (mapGame[i][j] === 1) {
                         const tileSprite = new PIXI.Graphics();
-                        tileSprite.beginFill(0x000000);
+                        tileSprite.beginFill(0x565e76);
                         tileSprite.drawRect(0, 0, tileSize, tileSize);
                         tileSprite.endFill();
                         tileSprite.x = j * tileSize;
@@ -169,6 +185,7 @@ function connect() {
                 }
             }
 
+           
             updateGame(gameData)
                 .then(() => {
                     positionWall = gameData.room.gameMap.positionWall;

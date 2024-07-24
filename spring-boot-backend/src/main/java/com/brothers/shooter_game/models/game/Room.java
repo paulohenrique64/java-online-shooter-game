@@ -49,13 +49,9 @@ public class Room {
         return false;
     }
 
-    public boolean playerFire(String username, Bullet bullet) {
-        Player shooter = null;
+    public boolean playerFire(Bullet bullet) {
         boolean mapCollision = false;
         boolean playerCollision = false;
-
-        for (Player player : this.playerList)
-            if (player.getUsername().equals(username))  shooter = player;
 
         do {
             mapCollision = checkBulletMapCollision(bullet);
@@ -118,6 +114,12 @@ public class Room {
 
             if (bulletRight > playerLeft && bulletLeft < playerRight && bulletBottom > playerTop && bulletTop < playerBottom) {
                 player.damage();
+                
+                if (!player.alive())
+                    for (Player p : this.playerList)
+                        if (p.getUsername().equals(bullet.getShooterName()))
+                            p.setKills(p.getKills() + 1);
+
                 return true;
             }
         }
