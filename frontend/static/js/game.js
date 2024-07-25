@@ -1,7 +1,9 @@
 import { Player } from './player.js';
 
+const currentHostname = window.location.hostname;
+
 // websockets
-var stompClient = Stomp.client('ws://localhost:8080/socket');
+var stompClient = Stomp.client(`ws://${currentHostname}:8080/socket`);
 
 // keyboard keys
 let keys = {};
@@ -21,7 +23,7 @@ function loadUserData() {
         method: "GET",
     };
 
-    fetch('http://localhost:8080/userdata', options)
+    fetch(`http://${currentHostname}:8080/userdata`, options)
         .then(response => {
            response.json()
             .then(responseJson => {

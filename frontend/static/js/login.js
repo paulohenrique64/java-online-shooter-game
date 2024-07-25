@@ -1,5 +1,7 @@
 const form = document.querySelector("form");
 
+const currentHostname = window.location.hostname;
+
 const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 
@@ -21,11 +23,11 @@ function login(userdata) {
         headers: myHeaders,
     };
 
-    fetch("http://localhost:8080/auth/login", options)
+    fetch(`http://${currentHostname}:8080/auth/login`, options)
         .then((response) => {
             console.log(response.status);
             if (response.status == 200)
-                window.location.replace("/frontend/lobby.html"); 
+                window.location.replace("/lobby"); 
         })
         .catch((error) => {
             console.log(error);

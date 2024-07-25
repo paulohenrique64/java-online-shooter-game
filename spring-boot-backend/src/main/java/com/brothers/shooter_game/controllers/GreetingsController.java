@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-@CrossOrigin("http://127.0.0.1:5500")
+@CrossOrigin("http://127.0.0.1:3000")
 @RestController
 public class GreetingsController {
     private static final String template = "Hello, %s!";

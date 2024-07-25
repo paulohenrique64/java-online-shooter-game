@@ -1,5 +1,7 @@
 const form = document.querySelector("form");
 
+const currentHostname = window.location.hostname;
+
 const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 
@@ -24,7 +26,7 @@ function register(userdata) {
         headers: myHeaders,
     };
 
-    fetch("http://localhost:8080/auth/register", options)
+    fetch(`http://${currentHostname}:8080/auth/register`, options)
         .then((response) => {
             console.log(response.status);
             if (response.status === 200)

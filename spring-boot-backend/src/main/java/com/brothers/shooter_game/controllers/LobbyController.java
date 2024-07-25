@@ -20,7 +20,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin("http://127.0.0.1:5500")
+@CrossOrigin("http://127.0.0.1:3000")
 @Controller
 public class LobbyController implements ApplicationListener  {
     @Autowired

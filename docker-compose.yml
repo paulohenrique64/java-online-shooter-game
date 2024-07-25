@@ -14,8 +14,8 @@ services:
     volumes:
       - ./data/db:/data/db
   
-  app:
-    container_name: shooter-game-app
+  app_backend:
+    container_name: shooter-game-backend
     depends_on:
       - mongo_db
     build: ./spring-boot-backend
@@ -28,5 +28,8 @@ services:
           # ignore:
           #   - node_modules/
 
-
-
+  app_frontend:
+    container_name: shooter-game-frontend
+    build: ./frontend
+    ports:
+      - 3000:3000

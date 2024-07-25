@@ -14,7 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin("http://127.0.0.1:5500")
+@CrossOrigin("http://127.0.0.1:3000")
 @RestController
 @RequestMapping("auth")
 public class AuthController {

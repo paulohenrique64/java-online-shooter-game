@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <head>
-    <title>Spring Security Example </title>
-    <!--    <link rel="stylesheet" href="../static/css/lobby.css">-->
+    <title>Lobby</title>
     <link href="./static/css/lobby.css" type="text/css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -11,7 +12,7 @@
                 <h1>Game Lobby</h1>
             </div>
             <div class="buttons header-buttons">
-                <a href="/frontend/game.html" class="start-game-button">Start Game</a>
+                <a href="/game" class="start-game-button">Start Game</a>
                 <a href="#" class="logout-game-button">Logout Game</a>
             </div>
         </div>
@@ -26,9 +27,6 @@
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script type="text/javascript" src="./static/js/lobby.js"></script>
 </body>
 </html>

@@ -1,11 +1,19 @@
+for (let i = 0; i < 10; i++) {
+    console.log("vai tomar no butaoooooooooooooooooooooooooooo");
+}
+
 var stompClient = null;
 
 var userdata = null;
 var selfUserData = null;
+const currentHostname = window.location.hostname;
+
+console.log('CURRENT HOSTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
+console.log(currentHostname);
 
 // connecting to web sockets server routes
 function connect() {
-    stompClient = Stomp.client('ws://localhost:8080/socket');
+    stompClient = Stomp.client(`ws://${currentHostname}:8080/socket`);
 
     stompClient.connect({}, function (frame) {
         stompClient.subscribe('/log/online-players-list', function (response) {
@@ -25,10 +33,12 @@ function getUserData() {
         method: "GET",
     };
 
-    fetch("http://localhost:8080/userdata", options)
+    fetch(`http://${currentHostname}:8080/userdata`, options)
         .then(response => {
+            console.log(response);
+
             if (response.status == 403)
-                window.location.replace("/frontend/home.html"); 
+                window.location.replace("/home"); 
 
             response.json()
                 .then(responseJson => {                
@@ -36,6 +46,9 @@ function getUserData() {
                     selfUserData = responseJson.user;
                     updateUserData(responseJson.user);
                     connect();
+                })
+                .catch(error => {
+                    console.log(error);
                 })
         })
         .catch(error => {
@@ -52,7 +65,7 @@ function updateOnlinePlayersList(sessions) {
     
     for (i = 0; i < size; i++) {
         let li = document.createElement("li");
-        li.innerText = "🟢 " + sessions[i].username;
+        li.innerText = sessions[i].username;
         if (selfUserData.name === sessions[i].username) li.innerText += " (you)";
         onlinePlayersList.append(li);
     }
@@ -80,9 +93,9 @@ logoutButton.addEventListener("click", function(obj) {
         method: "POST",
     };
 
-    fetch("http://localhost:8080/logout", options)
+    fetch(`http://${currentHostname}:8080/logout`, options)
         .then(response => {
-            window.location.replace("/frontend/home.html"); 
+            window.location.replace("/home"); 
         })
         .catch(error => {
             console.log(error);
@@ -96,7 +109,7 @@ startGameButton.addEventListener("click", function(obj) {
         method: "GET",
     };
 
-    fetch("http://localhost:8080/game/", options)
+    fetch(`http://${currentHostname}:8080/game/`, options)
         .then(response => {
             console.log(response.status);
         })
@@ -104,6 +117,5 @@ startGameButton.addEventListener("click", function(obj) {
             console.log(error);
         });
 });
-
 
 getUserData();

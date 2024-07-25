@@ -40,7 +40,7 @@ public class WebSecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.GET, "/", "/home", "/resources/**", "/register", "/login", "/static/**", "/css/**", "/javascript/**", "/greeting").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/", "/home", "/resources/**", "/register", "/login", "/static/**", "/css/**", "/javascript/**", "/greeting", "/lobby", "/game").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -58,7 +58,7 @@ public class WebSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5500", "http://localhost:5500"));
+        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:3000", "http://127.0.0.1:5500", "http://localhost:5500","http://localhost:3000", "http://25.42.239.229:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

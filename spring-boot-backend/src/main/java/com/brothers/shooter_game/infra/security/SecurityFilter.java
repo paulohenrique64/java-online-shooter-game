@@ -28,6 +28,8 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recoverToken(request);
 
+        System.out.println("pessoa tentando fazer login " + token);
+
         if (token != null){
             var name = tokenService.validateToken(token);
             UserDetails user = userRepository.findByName(name);
