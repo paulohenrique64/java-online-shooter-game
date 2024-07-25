@@ -1,6 +1,7 @@
 var stompClient = null;
 
 var userdata = null;
+var selfUserData = null;
 
 // connecting to web sockets server routes
 function connect() {
@@ -32,7 +33,9 @@ function getUserData() {
             response.json()
                 .then(responseJson => {                
                     console.log(responseJson.user);
-                    updateUserData(responseJson.user)
+                    selfUserData = responseJson.user;
+                    updateUserData(responseJson.user);
+                    connect();
                 })
         })
         .catch(error => {
@@ -49,7 +52,8 @@ function updateOnlinePlayersList(sessions) {
     
     for (i = 0; i < size; i++) {
         let li = document.createElement("li");
-        li.innerText = sessions[i].username;
+        li.innerText = "🟢 " + sessions[i].username;
+        if (selfUserData.name === sessions[i].username) li.innerText += " (you)";
         onlinePlayersList.append(li);
     }
 }
@@ -57,18 +61,15 @@ function updateOnlinePlayersList(sessions) {
 function updateUserData(userdata) {
     let li1 = document.createElement("li");
     li1.innerText = "name: " + userdata.name;
+
     document.querySelector('.user-data-list').append(li1);
 
     let li2 = document.createElement("li");
     li2.innerText = "kills: " +  userdata.kills;
     document.querySelector('.user-data-list').append(li2);
 
-    let li3 = document.createElement("li");
-    li3.innerText = "wins: " +  userdata.wins;
-    document.querySelector('.user-data-list').append(li3);
-
     let li4 = document.createElement("li");
-    li4.innerText = "score: " +  userdata.score;
+    li4.innerText = "score: " +  userdata.score.toFixed(2);
     document.querySelector('.user-data-list').append(li4);
 }
 
@@ -104,5 +105,5 @@ startGameButton.addEventListener("click", function(obj) {
         });
 });
 
-connect();
+
 getUserData();

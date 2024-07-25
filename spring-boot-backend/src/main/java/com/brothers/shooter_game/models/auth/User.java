@@ -23,7 +23,7 @@ public class User implements UserDetails {
     private int kills;
     private int gamesPlayed;
     private int wins;
-    private int score;
+    private double score;
     private Date created;
     private UserRoles role;
 
@@ -127,16 +127,20 @@ public class User implements UserDetails {
         this.wins = wins;
     }
 
-    public int getScore() {
+    public double getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(double score) {
         this.score = score;
     }
 
     public Date getCreated() {
         return created;
+    }
+
+    public String getId() {
+        return id;
     }
 
     @Override

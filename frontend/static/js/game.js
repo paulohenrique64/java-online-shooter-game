@@ -256,17 +256,17 @@ function connect() {
         //
         //
 
-        document.querySelector(".gameDiv").addEventListener('mousedown', () => {
+        document.querySelector(".container").addEventListener('mousedown', () => {
             getSelfPlayer().weapon.isFiring = true;
             console.log("firing");
         });
 
-        document.querySelector(".gameDiv").addEventListener('mouseup', () => {
+        document.querySelector(".container").addEventListener('mouseup', () => {
             getSelfPlayer().weapon.isFiring = false;
             console.log("stopped fire");
         });
 
-        document.querySelector(".gameDiv").addEventListener('mousemove', () => {
+        document.querySelector(".container").addEventListener('mousemove', () => {
             stompClient.send("/app/weapon-movement", {}, JSON.stringify({angle: getSelfPlayer().weapon.sprite.rotation}));
             console.log("rotating mouse");
         });

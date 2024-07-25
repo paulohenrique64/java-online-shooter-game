@@ -3,6 +3,7 @@ package com.brothers.shooter_game.controllers;
 import com.brothers.shooter_game.models.auth.Session;
 import com.brothers.shooter_game.models.auth.User;
 import com.brothers.shooter_game.models.game.*;
+import com.brothers.shooter_game.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
@@ -34,6 +36,9 @@ public class GameController implements ApplicationListener {
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    UserRepository userRepository;
 
     @MessageMapping("/start-game")
     @SendTo("/log/start-game")
@@ -89,7 +94,6 @@ public class GameController implements ApplicationListener {
     @SendTo("/log/game-data")
     public RoomDTO respawnPlayer(UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws Exception {
         User userdata = (User) usernamePasswordAuthenticationToken.getPrincipal();
-        System.out.println("o jogador " + userdata.getName() + " morreu");
         gameRoom.respawn(userdata.getName());
         return new RoomDTO(this.gameRoom);
     }
@@ -114,10 +118,20 @@ public class GameController implements ApplicationListener {
         SessionDisconnectEvent sessionDisconnectEvent = (SessionDisconnectEvent) event;
         String sessionIdDisconnected = sessionDisconnectEvent.getSessionId();
 
+        List<Player> playerList = gameRoom.getPlayerList();
+
+        for (Player player : playerList) {
+            if (player.getPlayerSessionId().equals(sessionIdDisconnected)) {
+                User user = (User) userRepository.findByName(player.getUsername());
+                user.setKills(user.getKills() + player.getKills());
+                user.setScore(user.getScore() + (player.getKills() * Math.random() * 10));
+                userRepository.deleteById(user.getId());
+                userRepository.save(user);
+            }
+        }
+
         if (gameRoom.removePlayerWithSessionId(sessionIdDisconnected))
             System.out.println("player with id '" + sessionDisconnectEvent.getSessionId() + "' DISCONNECTED of game lobby");
-
-        System.out.println(gameRoom.getPlayerList().toString());
 
         this.sendGameData();
     }

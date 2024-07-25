@@ -114,7 +114,7 @@ public class Room {
 
             if (bulletRight > playerLeft && bulletLeft < playerRight && bulletBottom > playerTop && bulletTop < playerBottom) {
                 player.damage();
-                
+
                 if (!player.alive())
                     for (Player p : this.playerList)
                         if (p.getUsername().equals(bullet.getShooterName()))
