@@ -1,15 +1,8 @@
-for (let i = 0; i < 10; i++) {
-    console.log("vai tomar no butaoooooooooooooooooooooooooooo");
-}
-
 var stompClient = null;
 
 var userdata = null;
 var selfUserData = null;
 const currentHostname = window.location.hostname;
-
-console.log('CURRENT HOSTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
-console.log(currentHostname);
 
 // connecting to web sockets server routes
 function connect() {
