@@ -26,13 +26,10 @@ public class ShooterGameApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		for (int i = 0; i < 5; i++) {
-			System.out.println("Hello world!");
-		}
-
-		System.out.println("aplication running on: http://localhost:8080" );
-
+		for (int i = 0; i < 5; i++) System.out.println("hello world");
+		System.out.println("aplication BACKEND running on: http://localhost:8080" );
+		System.out.println("aplication FRONTEND running on: http://localhost:3000" );
 		sessionRepo.deleteAll();
-//		userRepo.deleteAll();
+//		userRepo.deleteAll(); // delete all users from userdata database
 	}
 }

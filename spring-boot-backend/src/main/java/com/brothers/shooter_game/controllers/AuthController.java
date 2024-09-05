@@ -34,7 +34,7 @@ public class AuthController {
         System.out.println(userdata);
 
         if (this.userRepo.findByName(userdata.name()) == null) {
-            System.out.println("user not exists");
+            System.out.println("user " + userdata.name() + " not exists");
             return ResponseEntity.badRequest().build();
         }
 
@@ -42,7 +42,7 @@ public class AuthController {
         var auth = this.authenticationManager.authenticate(usernamePassword);
         var token = tokenService.generateToken((User) auth.getPrincipal());
 
-        System.out.println("new user get logged: " + token);
+        System.out.println("user " + userdata.name() + " get logged with token " + token);
 
         // set accessToken to cookie header
         ResponseCookie cookie = ResponseCookie.from("accessToken", token)

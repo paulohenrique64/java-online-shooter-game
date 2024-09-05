@@ -3,7 +3,7 @@ version: '3.2'
 services:
   mongo_db:
     image: mongo:5.0.2
-    container_name: mongo_db
+    container_name: mongodb_shootergame
     restart: unless-stopped
     env_file: ./.env
     environment:
@@ -13,7 +13,7 @@ services:
       - $MONGODB_LOCAL_PORT:$MONGODB_DOCKER_PORT
     volumes:
       - ./data/db:/data/db
-  
+
   app_backend:
     container_name: shooter-game-backend
     depends_on:

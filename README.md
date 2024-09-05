@@ -1,8 +1,8 @@
-## java spring boot shooter game
+## Java spring boot shooter game
 
-A multiplayer shooter game created with java spring backend and vanilla frontend
+A multiplayer shooter game created with spring boot in backend and vanilla html, css & javascript frontend
 
-### techs useds
+### Techs useds
 
 - spring boot
 - spring security
@@ -10,9 +10,9 @@ A multiplayer shooter game created with java spring backend and vanilla frontend
 - mongodb
 - nginx 
 
-### running project
+### Running the game
 
-in the project root, run this following commands
+in the game project root, run this following commands
 
 ```
 docker compose build
