@@ -13,6 +13,9 @@ services:
       - $MONGODB_LOCAL_PORT:$MONGODB_DOCKER_PORT
     volumes:
       - ./data/db:/data/db
+    networks:
+      - shooter-game-net
+  
 
   app_backend:
     container_name: shooter-game-backend
@@ -21,15 +24,18 @@ services:
     build: ./spring-boot-backend
     ports:
       - 8080:8080
-    develop:
-      watch:
-        - action: rebuild
-          path: .
-          # ignore:
-          #   - node_modules/
+    networks:
+      - shooter-game-net
 
   app_frontend:
     container_name: shooter-game-frontend
     build: ./frontend
     ports:
       - 3000:3000
+    networks:
+      - shooter-game-net
+
+networks:
+  shooter-game-net:
+    name: shooter-game-net
+    driver: bridge

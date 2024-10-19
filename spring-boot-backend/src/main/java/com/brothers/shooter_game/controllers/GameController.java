@@ -1,6 +1,5 @@
 package com.brothers.shooter_game.controllers;
 
-import com.brothers.shooter_game.models.auth.Session;
 import com.brothers.shooter_game.models.auth.User;
 import com.brothers.shooter_game.models.game.*;
 import com.brothers.shooter_game.repository.UserRepository;
@@ -9,25 +8,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.*;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
-
-import java.awt.*;
 import java.awt.geom.Point2D;
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-@CrossOrigin("http://127.0.0.1:3000")
 @RestController
 @RequestMapping("game")
 public class GameController implements ApplicationListener {

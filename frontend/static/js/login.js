@@ -25,7 +25,7 @@ function login(userdata) {
 
     fetch(`http://${currentHostname}:8080/auth/login`, options)
         .then((response) => {
-            console.log(response.status);
+            console.log(response.status);``
             if (response.status == 200)
                 window.location.replace("/lobby"); 
         })
@@ -33,4 +33,3 @@ function login(userdata) {
             console.log(error);
         });
 }
-
